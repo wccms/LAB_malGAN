@@ -58,7 +58,6 @@ class malGAN(GAN):
         D_bs = []
         D_layers = self.params.get('D_layers',[160,256,1])
         X_benign = tf.placeholder(tf.int32, [None, D_layers[0]])
-        D_in = tf.placeholder(tf.int32, [None, D_layers[0]])
         for i in range(0, len(D_layers) - 1):
             D_Ws.append(init_weight(D_layers[i], D_layers[i + 1], 'D_Ws_%d' % (i,)))
             D_bs.append(init_bias(D_layers[i + 1], 'D_bs_%d' % (i,)))
@@ -69,18 +68,56 @@ class malGAN(GAN):
             D_out = tf.nn.sigmoid(tf.matmul(D_out, D_Ws[D_layers[-1]]) + D_bs[D_layers[-1]])
             return D_out
 
-        # cal loss
+        # cal loss and solver
         G_out = G(X_malware,Z)
-        D_in = tf.concat(axis=0,values=[G_out,X_benign])
-        D_out = D(D_in)
+        D_fromBenign = D(X_benign)
+        D_fromG = D(G_out)
+        D_out = tf.concat(axis=0, values=[D_fromG, D_fromBenign])
         D_out_black = tf.placeholder(tf.int32, [None,1])
-
         D_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_out,labels=D_out_black))
-        G_loss = -tf.reduce_mean(D_fake)
+        G_loss = -tf.reduce_mean(D_fromG)
+        D_solver = (tf.train.AdamOptimizer(learning_rate=self.params.get('D learning rate'),beta1=0.5)
+                    .minimize(D_loss, var_list=D_Ws+D_bs))
+        G_solver = (tf.train.AdamOptimizer(learning_rate=self.params.get('G learning rate'),beta1=0.5)
+                    .minimize(G_loss, var_list=G_Ws+G_bs))
 
-        D_solver = (tf.train.RMSPropOptimizer(learning_rate=1e-4)
-                    .minimize(-D_loss, var_list=theta_D))
-        G_solver = (tf.train.RMSPropOptimizer(learning_rate=1e-4)
-                    .minimize(G_loss, var_list=theta_G))
+    def train(self, x_malware, x_benign):
+        """ train malGAN
+        :param x_malware: malware x
+        :param x_benign: benign x
+        :return: None
+        """
+        sess = tf.Session()
+        sess.run(tf.global_variables_initializer())
+        maxEpochNum = self.params.get('epoch num',100)
+        epochD = self.params.get('epoch D',100)
+        for it in range(maxEpochNum):
+            for _ in range(epochD):
+                X_mb, _ = mnist.train.next_batch(mb_size)
+
+                _, D_loss_curr = sess.run(
+                    [D_solver, D_loss],
+                    feed_dict={X: X_mb, z: sample_z(mb_size, z_dim)}
+                )
+
+            _, G_loss_curr = sess.run(
+                [G_solver, G_loss],
+                feed_dict={z: sample_z(mb_size, z_dim)}
+            )
+
+            if it % 1000 == 0:
+                print('Iter: {}; D loss: {:.4}; G_loss: {:.4}'
+                      .format(it, D_loss_curr, G_loss_curr))
+
+                if it % 1000 == 0:
+                    samples = sess.run(G_sample, feed_dict={z: sample_z(16, z_dim)})
+
+                    fig = plot(samples)
+                    plt.savefig('out/{}.png'
+                                .format(str(i).zfill(3)), bbox_inches='tight')
+                    i += 1
+                    plt.close(fig)
+
+
 
     def
