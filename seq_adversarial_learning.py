@@ -107,7 +107,7 @@ def tune_discriminator_parameters():
     train_result, val_result = model.train(X, sequence_length, y)
     log_message = 'Train result: ' + score_template % train_result + '\n'
     log_message += 'Val result: ' + score_template % val_result + '\n'
-    print log_message
+    print(log_message)
     with open(log_path, 'a') as f:
         f.write(log_message)
 

@@ -484,7 +484,7 @@ class SeqMerger(SeqGenerator):
             log_message = 'Generator Epoch %d: Loss / TPR: Training=%g(%g,%g) / %g, Val=%g(%g,%g) / %g' % \
                           (epoch, train_loss, train_loss_0, train_loss_1, train_tpr,
                            val_loss, val_loss_0, val_loss_1, val_tpr)
-            print log_message
+            print(log_message)
             with open(self.model_path + '--training_log.txt', 'a') as f:
                 f.write(log_message + '\n')
 
@@ -834,7 +834,7 @@ class SeqMergerA3C(SeqGenerator):
                         generated_valid_length[i] = idx_0 + idx_1
             generated_result = self.D.predict(generated_malware, generated_length)
             log_message += 'Generating supervised data. Epoch %d, TPR %g\n' % (t, generated_result.mean())
-            print 'Generating supervised data. Epoch %d, TPR %g' % (t, generated_result.mean())
+            print('Generating supervised data. Epoch %d, TPR %g' % (t, generated_result.mean()))
             to_merge_index_new = []
             for i in range(len(generated_result)):
                 if generated_result[i] == 0:
@@ -848,7 +848,7 @@ class SeqMergerA3C(SeqGenerator):
                 break
 
         log_message += 'Final TPR %g\n' % (1 - float(len(supervised_index)) / len(X),)
-        print 'Final TPR %g' % (1 - float(len(supervised_index)) / len(X),)
+        print('Final TPR %g' % (1 - float(len(supervised_index)) / len(X),))
         with open(self.model_path + '_pre_train' + '--training_log.txt', 'a') as f:
             f.write(log_message + '\n')
         # pack and shuffle
@@ -1025,7 +1025,7 @@ class SeqMergerA3C(SeqGenerator):
             log_message = 'Generator Epoch %d: Loss & PRI / TPR: Tra=%g, %g / %g, %g, Val=%g, %g, %g / %g, %g' % \
                           (epoch, train_loss, train_benign_priority, train_tpr, train_per_step_tpr,
                            val_loss, val_value_loss, val_benign_priority, val_tpr, val_per_step_tpr)
-            print log_message
+            print(log_message)
             with open(self.model_path + '_pre_train' + '--training_log.txt', 'a') as f:
                 f.write(log_message + '\n')
 
@@ -1225,7 +1225,7 @@ class SeqMergerA3C(SeqGenerator):
             log_message = 'Generator Epoch %d: Loss & PRI / TPR: Tra=%g, %g, %g / %g, %g, Val=%g, %g, %g / %g, %g' % \
                           (epoch, train_loss, train_value_loss, train_benign_priority, train_tpr, train_per_step_tpr,
                            val_loss, val_value_loss, val_benign_priority, val_tpr, val_per_step_tpr)
-            print log_message
+            print(log_message)
             with open(self.model_path + '--training_log.txt', 'a') as f:
                 f.write(log_message + '\n')
 
@@ -1684,7 +1684,7 @@ class SeqInserter(SeqGenerator):
                           'Val Loss: D %g/ G %g/ regu %g/ len+ %g TPR %g' % \
                           (epoch, train_D_loss, train_G_loss, train_G_regu, train_increased_length, train_tpr,
                            val_D_loss, val_G_loss, val_G_regu, val_increased_length, val_tpr)
-            print log_message
+            print(log_message)
             with open(self.model_path + '--training_log.txt', 'a') as f:
                 f.write(log_message + '\n')
 
