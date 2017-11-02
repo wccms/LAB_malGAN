@@ -118,5 +118,3 @@ class malGAN(GAN):
                     plt.close(fig)
 
 
-
-    def

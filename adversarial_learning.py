@@ -1,4 +1,5 @@
-from discriminator import RandomForrest
+from discriminator import RandomForest
+from discriminator import GBDT
 from discriminator import LR
 from discriminator import DT
 from discriminator import NB
@@ -12,6 +13,8 @@ from generator import AdversarialExamples
 import numpy as np
 from datetime import datetime
 import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 from utils import split_matrix
 import shutil
 import sys
@@ -88,15 +91,15 @@ def learning_BernoulliGenerator():
 
 def learning_MalGAN(D_name='RF', data_fraction='0.1', diff_data='0'):
     params = {
-        'G layers': [44942, 200, 200, 44942],
-        'noise dim': 1000,
+        'G layers': [160, 256, 160],
+        'noise dim': 10,
         'malware batch size': 128,
         'L2': 0.0,
         'learning rate': 0.001,
         'training set fraction': 0.75,
-        'D layers': [44942, 200, 200, 1],
+        'D layers': [160, 256, 1],
         'batch size': 256,
-        'regularization D layers': [44942, 200, 1],
+        'regularization D layers': [160, 256, 1],
         'regu coef': 0.0,
         'max epochs': 200,
         'max epochs no improvement': 25,
@@ -120,7 +123,7 @@ def learning_MalGAN(D_name='RF', data_fraction='0.1', diff_data='0'):
 #        params['max epochs no improvement'],
 #        params['num trials']
 #    )
-    tag = '20171016'
+    tag = '20171026_WGAN'
     dir_path = '../result/' + tag
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
@@ -132,15 +135,21 @@ def learning_MalGAN(D_name='RF', data_fraction='0.1', diff_data='0'):
     params['log path'] = dir_path + '/log.txt'
     score_template = 'TPR %(TPR)f\tFPR %(FPR)f\tAccuracy %(Accuracy)f\tAUC %(AUC)f'
     if D_name is 'RF':
-        D = RandomForrest()
+        D = RandomForest()
+    elif D_name is 'GBDT':
+        D = GBDT()
     elif D_name is 'LR':
         D = LR()
     elif D_name is 'DT':
         D = DT()
+    elif D_name is 'NB':
+        D = NB()
     elif D_name is 'SVM':
         D = SVM()
     elif D_name is 'MLP':
         D = MLP()
+    elif D_name is 'KNN':
+        D = KNN()
     else:
         D = VOTE()
 
@@ -149,7 +158,8 @@ def learning_MalGAN(D_name='RF', data_fraction='0.1', diff_data='0'):
                                delimiter=',', dtype=np.int32)
     test_data = np.loadtxt('../data/API_truncation50_random_split_test_1gram_feature.csv',
                            delimiter=',', dtype=np.int32)
-    log_message = str(datetime.now()) + '\tTraining discriminative model on original dataset\n'
+    log_message = str(datetime.now()) + '\tnow using ' + D_name + ' as Discrimibator\n'
+    log_message += str(datetime.now()) + '\tTraining discriminative model on original dataset\n'
     if diff_data is '0':
         D.train(training_data[:, :-1], training_data[:, -1])
     else:
@@ -266,7 +276,9 @@ if __name__ == '__main__':
     #learning_BernoulliGenerator()
     #learning_MalGAN(sys.argv[1], sys.argv[2], sys.argv[3])
     #print sys.argv[1], sys.argv[2], sys.argv[3]
-    for D_name in ['LR', 'DT', 'SVM', 'MLP', 'VOTE']:
-        for data_fraction in ['0.1', '0.2', '0.3', '0.4', '0.5', 'all']:
-            learning_MalGAN(D_name, data_fraction, '1')
+    for D_name in ['RF', 'GBDT', 'LR', 'DT', 'NB', 'SVM', 'MLP', 'KNN', 'VOTE']:
+        learning_MalGAN(D_name, '0.1', '1')
+    #for D_name in ['LR', 'DT', 'SVM', 'MLP', 'VOTE']:
+    #    for data_fraction in ['0.1', '0.2', '0.3', '0.4', '0.5', 'all']:
+    #        learning_MalGAN(D_name, data_fraction, '1')
     #genearting_adversarial_examples()

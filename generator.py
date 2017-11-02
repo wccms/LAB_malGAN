@@ -263,6 +263,7 @@ class MalGAN(Generator):
         def init_weight(dim_in, dim_out, name=None, stddev=1.0):
             return tf.Variable(tf.truncated_normal([dim_in, dim_out],
                                                    stddev=stddev/math.sqrt(float(dim_in))), name=name)
+
         def init_bias(dim_out, name=None):
             return tf.Variable(tf.zeros([dim_out]), name=name)
 
@@ -307,6 +308,7 @@ class MalGAN(Generator):
             hidden = tf.nn.sigmoid(tf.matmul(hidden, D_Ws[i]) + D_bs[i])
         hidden = hidden[:, 0]
         self.discriminator_result = tf.placeholder(tf.int32, [batch_size])
+        # D_loss : now use WGAN
         self.D_loss = -(tf.to_float(self.discriminator_result) *
                       tf.log(tf.clip_by_value(hidden, 1e-10, 1.0))
                       + (1 - tf.to_float(self.discriminator_result)) *
@@ -337,7 +339,9 @@ class MalGAN(Generator):
         hidden_regu = hidden_regu[:, 0]
         self.regu_D_tpr = tf.reduce_mean(tf.round(hidden_regu))
         hidden = (hidden + hidden_regu * self.params.get('regu coef', 0.1)) / (1.0 + self.params.get('regu coef', 0.1))
-        self.G_loss = -tf.log(tf.clip_by_value(hidden, 1e-10, 1.0))
+        # G_loss : now use WGAN
+        #self.G_loss = -tf.log(tf.clip_by_value(hidden, 1e-10, 1.0))
+        self.G_loss = -tf.clip_by_value(hidden, 1e-10, 1.0)
         self.G_loss = tf.reduce_mean(self.G_loss)
 
         self.G_L2 = tf.reduce_sum(probability) / malware_batch_size
@@ -672,7 +676,7 @@ class AdversarialExamples(Generator):
         num_trials = np.ones((len(X),), dtype=np.int32) * self.params.get('num trials', 1000)
         succeed_flag = np.zeros((len(X),), dtype=np.int32)
         for t in range(self.params.get('num trials', 1000)):
-            print(t)
+            print t
             for start, end in zip(range(0, len(X), batch_size), range(batch_size, len(X) + 1, batch_size)):
                 X_batch = generated_X[start: end]
                 #succeed_flag = np.zeros((batch_size,), dtype=np.int32)
