@@ -1,5 +1,15 @@
 import numpy as np
 
+def dataset():
+    def __init__(self):
+        self.train_data = np.loadtxt('../data/API_truncation50_random_split_trainval_1gram_feature.csv',
+                               delimiter=',', dtype=np.int32)
+        self.test_data = np.loadtxt('../data/API_truncation50_random_split_test_1gram_feature.csv',
+                               delimiter=',', dtype=np.int32)
+        self.train_data_benign, self.training_data_malware = split_matrix(self.train_data)
+        self.test_data_benign, self.test_data_malware = split_matrix(self.test_data)
+        self.
+
 def split_matrix(data):
     """ split the data with binary label into two matrix, each with one class
     :param data: the data matrix to be split, the last column is the class label

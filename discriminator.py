@@ -1,6 +1,7 @@
 from sklearn import metrics
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import BernoulliNB
@@ -55,7 +56,7 @@ class Discriminator(object):
         return score_dict
 
 
-class RandomForrest(Discriminator):
+class RandomForest(Discriminator):
     """
     using RF as the discriminator
     """
@@ -67,6 +68,19 @@ class RandomForrest(Discriminator):
 
     def train(self, X, y):
         self.model = RandomForestClassifier(n_estimators=self.num_trees, n_jobs=self.num_threads)
+        self.model.fit(X, y)
+
+        
+class GBDT(Discriminator):
+    """
+    using GBDT as the discriminator
+    """
+
+    def __init__(self):
+        self.model = None
+
+    def train(self, X, y):
+        self.model = GradientBoostingClassifier()
         self.model.fit(X, y)
 
 
