@@ -57,22 +57,21 @@ class malGAN(GAN):
         D_Ws = []
         D_bs = []
         D_layers = self.params.get('D_layers',[160,256,1])
-        X_benign = tf.placeholder(tf.int32, [None, D_layers[0]])
+        D_in = tf.placeholder(tf.int32, [None, D_layers[0]])
         for i in range(0, len(D_layers) - 1):
             D_Ws.append(init_weight(D_layers[i], D_layers[i + 1], 'D_Ws_%d' % (i,)))
             D_bs.append(init_bias(D_layers[i + 1], 'D_bs_%d' % (i,)))
         def D(x):
             D_out = x
             for i in range(0, len(D_layers) - 2):
+
                 D_out = tf.nn.relu(tf.matmul(D_out, D_Ws[i]) + D_bs[i])
             D_out = tf.nn.sigmoid(tf.matmul(D_out, D_Ws[D_layers[-1]]) + D_bs[D_layers[-1]])
             return D_out
 
         # cal loss and solver
         G_out = G(X_malware,Z)
-        D_fromBenign = D(X_benign)
-        D_fromG = D(G_out)
-        D_out = tf.concat(axis=0, values=[D_fromG, D_fromBenign])
+        D_out = D(D_in)
         D_out_black = tf.placeholder(tf.int32, [None,1])
         D_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_out,labels=D_out_black))
         G_loss = -tf.reduce_mean(D_fromG)
