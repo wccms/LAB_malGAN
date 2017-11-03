@@ -256,7 +256,7 @@ class RNN_Classifier(SeqDiscriminator):
                 best_val_epoch = epoch
 
             log_message = 'Discriminator Epoch %d: Loss: Training=%g, Val=%g' % (epoch, train_loss, val_loss)
-            print log_message
+            print(log_message)
             with open(self.model_path + '--training_log.txt', 'a') as f:
                 f.write(log_message + '\n')
 
@@ -507,7 +507,7 @@ class RNN_LM(SeqDiscriminator):
                 best_val_epoch = epoch
 
             log_message = 'Discriminator Epoch %d: Loss: Training=%g, Val=%g' % (epoch, train_loss, val_loss)
-            print log_message
+            print(log_message)
             with open(self.model_path + '--training_log.txt', 'a') as f:
                 f.write(log_message + '\n')
 
