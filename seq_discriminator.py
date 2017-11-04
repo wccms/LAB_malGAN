@@ -216,8 +216,8 @@ class RNN_Classifier(SeqDiscriminator):
         X = X[:num_training_samples]
         sequence_length = sequence_length[:num_training_samples]
         y = y[:num_training_samples]
-        self.saver.restore(self.sess, '../D_models/20170219_birnn_LSTM_128_ff_128_attention_None_max_len_1024_lr_0.001/model-24')
-        return self.evaluate(X, sequence_length, y), self.evaluate(X_val, sequence_length_val, y_val)
+        # self.saver.restore(self.sess, '../D_models/20171104_birnn_LSTM_128_ff_128_attention_None_max_len_1024_lr_0.001/model-24')
+        # return self.evaluate(X, sequence_length, y), self.evaluate(X_val, sequence_length_val, y_val)
 
         best_val_loss = 1000.0
         best_val_epoch = 0

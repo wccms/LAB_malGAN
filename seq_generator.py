@@ -29,7 +29,7 @@ class SeqGenerator(object):
         raise NotImplementedError("Abstract method")
 
 
-class MergerCell(tf.nn.rnn_cell.RNNCell):
+class MergerCell():
     """The cell used to merge two sequences"""
 
     def __init__(self, cell, inputs_0, inputs_0_length, inputs_1, inputs_1_length,

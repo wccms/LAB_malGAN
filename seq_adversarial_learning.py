@@ -82,7 +82,7 @@ def tune_discriminator_parameters():
     attention_layers = None
     max_length = 1024
     learning_rate = 0.001
-    tag = '20170219_%s_LSTM_%s_ff_%s_attention_%s_max_len_%d_lr_%g' % (
+    tag = '20171104_%s_LSTM_%s_ff_%s_attention_%s_max_len_%d_lr_%g' % (
         'birnn' if bidirectional else 'rnn',
         '_'.join([str(layer) for layer in rnn_layers]),
         '_'.join([str(layer) for layer in ff_layers]),
@@ -400,5 +400,5 @@ def learning_SeqInserter():
             f.write(log_message + '\n\n')
 
 if __name__ == '__main__':
-    #tune_discriminator_parameters()
-    learning_SeqInserter()
+    tune_discriminator_parameters()
+    #learning_SeqInserter()
