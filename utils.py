@@ -1,4 +1,4 @@
-import numpy as np
+imimport numpy as np
 
 def dataset():
     def __init__(self):

@@ -676,7 +676,7 @@ class AdversarialExamples(Generator):
         num_trials = np.ones((len(X),), dtype=np.int32) * self.params.get('num trials', 1000)
         succeed_flag = np.zeros((len(X),), dtype=np.int32)
         for t in range(self.params.get('num trials', 1000)):
-            print(t)
+            print t
             for start, end in zip(range(0, len(X), batch_size), range(batch_size, len(X) + 1, batch_size)):
                 X_batch = generated_X[start: end]
                 #succeed_flag = np.zeros((batch_size,), dtype=np.int32)
